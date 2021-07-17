@@ -9,7 +9,7 @@ from . import db
 bp = Blueprint("pets", "pets", url_prefix="")
 
 def format_date(d):
-    if type(d) is str:
+    if type(d) is str and d:
         d = datetime.datetime.strptime(d, '%Y-%m-%d')
         v = d.strftime("%a - %b %d, %Y")
         return v
