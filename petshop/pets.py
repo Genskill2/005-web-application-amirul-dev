@@ -9,8 +9,8 @@ from . import db
 bp = Blueprint("pets", "pets", url_prefix="")
 
 def format_date(d):
-    if type(d) is str and d:
-        d = datetime.datetime.strptime(d, '%Y-%m-%d')
+    if d:
+        d = datetime.datetime.strptime(str(d), '%Y-%m-%d')
         v = d.strftime("%a - %b %d, %Y")
         return v
     else:
@@ -54,7 +54,7 @@ def pet_info(pid):
     name, bought, sold, description, species = pet
     data = dict(id = pid,
                 name = name,
-                bought = format_date(str(bought)),
+                bought = format_date(bought),
                 sold = format_date(sold),
                 description = description, #TODO Not being displayed
                 species = species,
@@ -73,7 +73,7 @@ def edit(pid):
         name, bought, sold, description, species = pet
         data = dict(id = pid,
                     name = name,
-                    bought = format_date(str(bought)),
+                    bought = format_date(bought),
                     sold = format_date(sold),
                     description = description,
                     species = species,
