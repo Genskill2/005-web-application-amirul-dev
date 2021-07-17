@@ -10,7 +10,7 @@ bp = Blueprint("pets", "pets", url_prefix="")
 
 def format_date(d):
     if d:
-        d = datetime.datetime.strptime(str(d), '%Y-%m-%d')
+        d = datetime.datetime.strptime(d, '%Y-%m-%d')
         v = d.strftime("%a - %b %d, %Y")
         return v
     else:
@@ -86,7 +86,7 @@ def edit(pid):
         return render_template("editpet.html", now=now, check = check, **data)
     elif request.method == "POST":
         description = request.form.get('description')
-        now  = datetime.datetime.now().strftime("%Y-%m-%d")
+        now  = datetime.datetime.now().date()
         sold = request.form.get('sold')
         if sold==None:
                     sold = ''
