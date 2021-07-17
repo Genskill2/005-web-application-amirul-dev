@@ -18,19 +18,27 @@ def format_date(d):
 
 @bp.route("/search/<field>/<value>")
 def search(field, value):
-    # TBD
-    return ""
+    conn = db.get_db()
+    cursor = conn.cursor()
+    oby = request.args.get("order_by",'id') # TODO. This is currently not used. 
+    order = request.args.get("order", "asc")
+    if order == "asc":
+        cursor.execute(f"select p.id, p.name, p.bought, p.sold, s.name from pet p, animal s, tags_pets tp, tag t where p.species = s.id and tp.pet = p.id and tp.tag = t.id and t.name = '{value}' order by p.{oby}")
+    else:
+        cursor.execute(f"select p.id, p.name, p.bought, p.sold, s.name from pet p, animal s, tags_pets tp, tag t where p.species = s.id and tp.pet = p.id and tp.tag = t.id and t.name = '{value}' order by p.{oby} desc")
+    pets = cursor.fetchall()
+    return render_template('search.html', field = field, value = value, pets = pets, order="desc" if order=="asc" else "asc")
 
 @bp.route("/")
 def dashboard():
     conn = db.get_db()
     cursor = conn.cursor()
-    oby = request.args.get("order_by", "id") # TODO. This is currently not used. 
+    oby = request.args.get("order_by",'id') # TODO. This is currently not used. 
     order = request.args.get("order", "asc")
     if order == "asc":
-        cursor.execute(f"select p.id, p.name, p.bought, p.sold, s.name from pet p, animal s where p.species = s.id order by p.id")
+        cursor.execute(f"select p.id, p.name, p.bought, p.sold, s.name from pet p, animal s where p.species = s.id order by p.{oby}")
     else:
-        cursor.execute(f"select p.id, p.name, p.bought, p.sold, s.name from pet p, animal s where p.species = s.id order by p.id desc")
+        cursor.execute(f"select p.id, p.name, p.bought, p.sold, s.name from pet p, animal s where p.species = s.id order by p.{oby} desc")
     pets = cursor.fetchall()
     return render_template('index.html', pets = pets, order="desc" if order=="asc" else "asc")
 
@@ -70,10 +78,19 @@ def edit(pid):
                     description = description,
                     species = species,
                     tags = tags)
-        return render_template("editpet.html", **data)
+        if sold=='':
+                check = ''
+        else :
+                check ='checked'
+        now  = datetime.datetime.now().date()
+        return render_template("editpet.html", now=now, check = check, **data)
     elif request.method == "POST":
         description = request.form.get('description')
         sold = request.form.get("sold")
+        if sold==None:
+                    sold = ''
+        cursor.execute("update pet set description = ?, sold = ? where id = ?", [description, sold, pid])
+        conn.commit()
         # TODO Handle sold
         return redirect(url_for("pets.pet_info", pid=pid), 302)
         
