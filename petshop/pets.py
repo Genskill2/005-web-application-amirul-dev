@@ -89,8 +89,10 @@ def edit(pid):
         now  = datetime.datetime.now().date()
         sold = request.form.get('sold')
         if sold==None:
-                    sold = ''
-        cursor.execute("update pet set description = ?, sold = ? where id = ?", [description, sold, pid])
+                    soldDate = ''
+        else :
+                    soldDate = now
+        cursor.execute("update pet set description = ?, sold = ? where id = ?", [description, soldDate, pid])
         conn.commit()
         # TODO Handle sold
         return redirect(url_for("pets.pet_info", pid=pid), 302)
