@@ -10,7 +10,7 @@ bp = Blueprint("pets", "pets", url_prefix="")
 
 def format_date(d):
     if d:
-        d = datetime.datetime.strptime(d, '%Y-%m-%d')
+        d = datetime.datetime.strptime(str(d), '%Y-%m-%d')
         v = d.strftime("%a - %b %d, %Y")
         return v
     else:
